@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pinhao Yan | Digital Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+    <style>
+      :root {
+        --bg-color: #121212;
+        --primary-text: #e0e0e0;
+        --secondary-text: #a0a0a0;
+        --accent-color: #c0a080;
+        --card-bg: #1a1a1a;
+        --border-color: #333333;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--primary-text);
+      }
+      .font-serif {
+        font-family: 'Cormorant Garamond', serif;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-color);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--secondary-text);
+        border-radius: 10px;
+        border: 2px solid var(--bg-color);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-color);
+      }
+      @keyframes fadeIn {
+        to { opacity: 1; }
+      }
+      @keyframes fadeInUp {
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes scroll-down {
+          0% { opacity: 0; transform: translateY(0); }
+          40% { opacity: 1; }
+          80% { opacity: 0; transform: translateY(12px); }
+          100% { opacity: 0; }
+      }
+      .animate-scroll-down {
+          animation: scroll-down 2.2s infinite;
+      }
+      .stagger-animation {
+        animation: fadeInUp 0.8s ease-out forwards;
+      }
+      
+      /* 移动端滑动样式 */
+      .mobile-swipe-container {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .mobile-swipe-container::-webkit-scrollbar {
+        display: none;
+      }
+      .mobile-swipe-item {
+        scroll-snap-align: start;
+        flex-shrink: 0;
+      }
+      
+      /* 指示器样式 */
+      .indicator-dot {
+        transition: all 0.3s ease;
+      }
+      .indicator-dot.active {
+        background-color: var(--accent-color);
+        transform: scale(1.2);
+      }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+      const { createRoot } = ReactDOM;
+
+      //========= CONSTANTS =========//
+      const ACTIVITIES = [
+        {
+          name: "NYU Precollege Program",
+          role: "Participant",
+          category: "Academic",
+          time: "Jul - Aug 2024",
+          description: "Intensive program in Microeconomics & Nonprofit Business Management.",
+          points: [
+            "Analyzed social impact models through case studies of leading non-profits",
+            "Developed business plan for social enterprise balancing sustainability with mission",
+            "Engaged in economic theory debates and real-world applications"
+          ]
+        },
+        {
+          name: "WFLA Golf Varsity Team",
+          role: "Founder & Captain",
+          category: "Athletics",
+          time: "Sep 2023 - Jun 2025",
+          description: "Established the school's inaugural golf team from the ground up.",
+          points: [
+            "Developed data-driven training regimen improving team average by 5 strokes",
+            "Recruited and mentored 15 members in technique and course strategy",
+            "Organized logistics for city and regional competitions"
+          ]
+        },
+        {
+          name: "Drama Club 'KaleidoTheatre'",
+          role: "Vice President",
+          category: "Cultural",
+          time: "Sep 2023 - Jun 2024",
+          description: "Managed theatrical productions from concept to performance.",
+          points: [
+            "Directed one-act play exploring social alienation themes",
+            "Secured 20% increase in sponsorship through community outreach",
+            "Acted in major productions and served as stage manager"
+          ]
+        },
+        {
+            name: "Golf Hongkou District Team",
+            role: "Captain",
+            category: "Athletics",
+            time: "2018 - 2025",
+            description: "Competed in city-wide tournaments and mentored teammates.",
+            points: [
+                "Trained weekly with district-level coaches on advanced techniques",
+                "Mentored junior players, improving tournament scores by 10%",
+                "Analyzed statistics to develop personalized training plans"
+            ]
+        },
+      ];
+
+      const PROJECTS = [
+        {
+          title: "AI & Technology for Well-Being",
+          period: "Jul 2025",
+          description: "Fudan University project creating AI vision system to aid the visually impaired.",
+          points: [
+            "Engineered system using Python, YOLO, and Raspberry Pi for safe navigation",
+            "Conducted user-feedback analysis with 20+ testers to improve effectiveness",
+            "Presented findings at university symposium on human-centered AI design",
+            "Researched AI applications for disabled individuals in sports"
+          ],
+          image: "https://s2.loli.net/2025/10/15/kr3HJnG19wizpFQ.jpg",
+          tags: ["Python", "AI/ML", "YOLO", "Raspberry Pi", "HCI"]
+        },
+        {
+          title: "Golf and Social Capital Study",
+          period: "Jul - Oct 2025",
+          description: "Independent research analyzing socio-economic networks fostered by golf.",
+          points: [
+              "Comparative analysis of golf's role in creating social capital vs other sports",
+              "Designed surveys for 100+ enthusiasts and professionals",
+              "Statistical analysis identifying correlations between membership and career progression",
+              "Authored 20-page research paper on recreation's impact on social mobility"
+          ],
+          image: "https://s2.loli.net/2025/10/15/avTHmjXUcS1rJlN.jpg",
+          tags: ["Social Research", "Data Analysis", "Economics", "Statistics"]
+        },
+      ];
+      
+      const GALLERY_ITEMS = [
+        {
+          title: "Directing 'Le Malentendu'",
+          description: "Directorial debut exploring existentialist themes through minimalist stage design.",
+          image: "https://s2.loli.net/2025/10/15/1xGibo768VpNuLB.jpg"
+        },
+        {
+          title: "Summer at NYU",
+          description: "Studying nonprofit management and microeconomics, solidifying my interest in policy and community action.",
+          image: "https://s2.loli.net/2025/10/15/DvAu5BOK4MRlFWE.jpg"
+        },
+        {
+          title: "Jiangsu Province Tournament",
+          description: "Championship victory representing years of disciplined practice and strategic analysis.",
+          image: "https://s2.loli.net/2025/10/15/SODA2nXQ6EWkjPZ.jpg"
+        },
+        {
+          title: "AI for Social Good Demo",
+          description: "Presenting our AI vision system for extending human capability and fostering independence.",
+          image: "https://s2.loli.net/2025/10/15/HIEAQJ6b8LWFPsd.jpg"
+        },
+      ];
+
+      const AWARDS = [
+        { name: "National Economics Competition (NEC)", level: "Regional Gold, National Bronze, Global Top 10", time: "2024-2025" },
+        { name: "International Economics Olympics (IEO)", level: "Regional & National Bronze", time: "2025" },
+        { name: "John Locke Essay Competition", level: "Shortlisted", time: "2025" },
+        { name: "Jiangsu Province Golf Tournament", level: "Champion", time: "2022" },
+        { name: "China Third-Level Athlete", level: "Golf Certification", time: "2021" },
+        { name: "School Leadership Award", level: "Honor Certificate", time: "2024" },
+      ];
+
+      const EDUCATION = [
+        {
+          school: "Shanghai World Foreign Language Academy",
+          period: "Sep 2023 - Jun 2026",
+          degree: "A-Level Programme",
+          details: [
+            "GPA: 4.0 | Predicted Grades: 4A*",
+            "Subjects: Mathematics, Further Mathematics, Economics, Physics",
+            "SAT: 1510 (Reading & Writing: 710, Math: 800)"
+          ]
+        },
+        {
+          school: "New York University",
+          period: "Jul - Aug 2024",
+          degree: "Pre-college Program",
+          details: [
+            "Introduction to Microeconomics",
+            "Business of Nonprofit Management",
+            "University-level coursework and research methods"
+          ]
+        }
+      ];
+      
+      //========= HOOKS =========//
+      const useOnScreen = (options = {}) => {
+        const ref = useRef(null);
+        const [isIntersecting, setIntersecting] = useState(false);
+
+        useEffect(() => {
+          const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+              setIntersecting(true);
+              if (options.once !== false) {
+                observer.unobserve(entry.target);
+              }
+            } else if (options.once === false) {
+              setIntersecting(false);
+            }
+          }, { threshold: options.threshold || 0.1, ...options });
+
+          const currentRef = ref.current;
+          if (currentRef) {
+            observer.observe(currentRef);
+          }
+
+          return () => {
+            if (currentRef) {
+              observer.unobserve(currentRef);
+            }
+          };
+        }, []);
+
+        return [ref, isIntersecting];
+      };
+
+      //========= COMPONENTS =========//
+      const AnimatedSection = ({ children, className = '', delay = 0 }) => {
+        const [ref, isIntersecting] = useOnScreen({ threshold: 0.1 });
+        return (
+          <div 
+            ref={ref} 
+            className={`transition-all duration-1000 ease-out ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${className}`}
+            style={{ transitionDelay: `${delay}ms` }}
+          >
+            {children}
+          </div>
+        );
+      };
+
+      const SectionTitle = ({ number, title }) => (
+        <h2 className="flex items-center text-3xl font-serif font-bold text-slate-100 mb-12">
+          <span className="text-2xl text-[var(--accent-color)] font-mono mr-4">{number}</span>
+          {title}
+          <span className="ml-6 h-px w-24 md:w-64 bg-[var(--border-color)]"></span>
+        </h2>
+      );
+
+      const Header = () => {
+        const [isScrolled, setIsScrolled] = useState(false);
+        const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+        useEffect(() => {
+          const handleScroll = () => setIsScrolled(window.scrollY > 50);
+          window.addEventListener('scroll', handleScroll);
+          return () => window.removeEventListener('scroll', handleScroll);
+        }, []);
+
+        const navLinks = [
+          { name: 'About', href: '#about' },
+          { name: 'Education', href: '#education' },
+          { name: 'Experience', href: '#experience' },
+          { name: 'Projects', href: '#projects' },
+          { name: 'Gallery', href: '#gallery' },
+          { name: 'Awards', href: '#awards' },
+          { name: 'Contact', href: '#contact' },
+        ];
+
+        return (
+          <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/80 backdrop-blur-sm' : 'bg-transparent'}`}>
+            <div className="container mx-auto flex justify-between items-center p-6">
+              <a href="#" className="text-xl font-serif font-bold text-[var(--accent-color)] tracking-wider">Pinhao Yan</a>
+              
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex items-center space-x-8">
+                {navLinks.map((link) => (
+                  <a key={link.name} href={link.href} className="text-[var(--secondary-text)] hover:text-[var(--accent-color)] transition-colors duration-300 group">
+                    {link.name}
+                    <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-[1px] bg-[var(--accent-color)]"></span>
+                  </a>
+                ))}
+              </nav>
+
+              {/* Mobile Menu Button */}
+              <button 
+                className="md:hidden text-[var(--accent-color)]"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                </svg>
+              </button>
+
+              {/* Mobile Navigation */}
+              {isMobileMenuOpen && (
+                <nav className="absolute top-full left-0 right-0 bg-black/95 backdrop-blur-sm md:hidden">
+                  <div className="flex flex-col space-y-4 p-6">
+                    {navLinks.map((link) => (
+                      <a 
+                        key={link.name} 
+                        href={link.href} 
+                        className="text-[var(--secondary-text)] hover:text-[var(--accent-color)] transition-colors duration-300"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {link.name}
+                      </a>
+                    ))}
+                  </div>
+                </nav>
+              )}
+            </div>
+          </header>
+        );
+      };
+
+      const Hero = () => (
+        <section className="min-h-screen flex flex-col justify-center items-start pt-20 relative">
+          <div className="space-y-4">
+            <h1 className="text-xl md:text-2xl text-[var(--accent-color)] font-mono animate-[fadeIn_1s_ease-in-out_0.2s_forwards] opacity-0">Pinhao Yan</h1>
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-100 animate-[fadeIn_1s_ease-in-out_0.4s_forwards] opacity-0">Highschool Student</h2>
+            <h3 className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-400 animate-[fadeIn_1s_ease-in-out_0.6s_forwards] opacity-0">& Systems Thinker</h3>
+            <p className="max-w-2xl text-slate-300 leading-relaxed pt-4 animate-[fadeInUp_1s_ease-in-out_0.8s_forwards] opacity-0">
+              Exploring the intersection of economics, technology, and human behavior through research, leadership, and creative expression.
+            </p>
+          </div>
+          <div className="animate-[fadeInUp_1s_ease-in-out_1s_forwards] opacity-0">
+            <a href="#about" className="mt-12 inline-block px-10 py-4 border border-[var(--accent-color)] text-[var(--accent-color)] rounded-sm hover:bg-[var(--accent-color)]/10 transition-all duration-300 font-mono">
+              Explore My Work
+            </a>
+          </div>
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
+            <a href="#about" aria-label="Scroll down">
+              <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center items-start p-1">
+                <div className="w-1 h-2 bg-gray-400 rounded-full animate-scroll-down"></div>
+              </div>
+            </a>
+          </div>
+        </section>
+      );
+      
+      const About = () => {
+        const skills = ['Economic Analysis', 'Quantitative Research', 'Python Programming', 'Data Visualization', 'Public Speaking', 'Leadership', 'English (Fluent)', 'Chinese (Native)'];
+        
+        return (
+          <section id="about" className="py-24">
+            <AnimatedSection>
+              <SectionTitle number="01." title="About Me" />
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                  <div className="lg:col-span-3 space-y-4 text-[var(--secondary-text)] text-lg leading-relaxed">
+                      <p>I'm fascinated by systems—economic models, social networks, and the strategic thinking required in both golf and theatre. My academic pursuits in Mathematics and Economics are complemented by hands-on experience in leadership and creative expression.</p>
+                      <p>From founding my school's golf team to directing theatrical productions, I approach challenges with analytical rigor and collaborative spirit. My research on AI for social good and the social capital of golf reflects my interest in understanding how technology and human behavior intersect.</p>
+                      <p className="mt-6 mb-4 text-slate-300">Skills I've been developing:</p>
+                      <ul className="grid grid-cols-2 gap-2 font-mono text-sm">
+                          {skills.map(skill => (
+                              <li key={skill} className="flex items-center">
+                                  <span className="text-[var(--accent-color)] mr-2">▹</span>{skill}
+                              </li>
+                          ))}
+                      </ul>
+                  </div>
+                  <div className="lg:col-span-2 relative">
+                      <div className="relative group max-w-sm mx-auto">
+                          <div className="absolute top-4 left-4 w-full h-full border-2 border-[var(--accent-color)] rounded transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1"></div>
+                          <img 
+                            src="https://s2.loli.net/2025/10/15/DvfuNXH1wkYOICU.jpg" 
+                            alt="Pinhao Yan"
+                            className="relative rounded w-full filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                          />
+                      </div>
+                  </div>
+              </div>
+            </AnimatedSection>
+          </section>
+        );
+      };
+
+      const Education = () => (
+        <section id="education" className="py-24">
+          <AnimatedSection>
+            <SectionTitle number="02." title="Education" />
+            <div className="space-y-8">
+              {EDUCATION.map((edu, index) => (
+                <AnimatedSection key={index} delay={index * 200}>
+                  <div className="bg-[var(--card-bg)] border border-[var(--border-color)] p-6 rounded-md">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-100">{edu.school}</h3>
+                        <p className="text-[var(--accent-color)] font-medium">{edu.degree}</p>
+                      </div>
+                      <p className="font-mono text-sm text-slate-400 mt-2 md:mt-0">{edu.period}</p>
+                    </div>
+                    <ul className="space-y-1">
+                      {edu.details.map((detail, i) => (
+                        <li key={i} className="flex text-[var(--secondary-text)]">
+                          <span className="text-[var(--accent-color)] mr-2">▹</span>
+                          <span>{detail}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          </AnimatedSection>
+        </section>
+      );
+      
+      const Experience = () => {
+        const [activeTab, setActiveTab] = useState(0);
+        const [indicatorStyle, setIndicatorStyle] = useState({});
+        const [isMobile, setIsMobile] = useState(false);
+        const tabsRef = useRef([]);
+        const swipeContainerRef = useRef(null);
+
+        useEffect(() => {
+          const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+          };
+          
+          checkMobile();
+          window.addEventListener('resize', checkMobile);
+          return () => window.removeEventListener('resize', checkMobile);
+        }, []);
+
+        useEffect(() => {
+          if (!isMobile) {
+            const activeTabNode = tabsRef.current[activeTab];
+            if (activeTabNode) {
+              setIndicatorStyle({
+                height: `${activeTabNode.offsetHeight}px`,
+                transform: `translateY(${activeTabNode.offsetTop}px)`
+              });
+            }
+          }
+        }, [activeTab, isMobile]);
+
+        // 移动端滑动处理
+        useEffect(() => {
+          if (isMobile && swipeContainerRef.current) {
+            const container = swipeContainerRef.current;
+            
+            const handleScroll = () => {
+              const scrollLeft = container.scrollLeft;
+              const itemWidth = container.scrollWidth / ACTIVITIES.length;
+              const newActiveIndex = Math.round(scrollLeft / itemWidth);
+              
+              if (newActiveIndex !== activeTab && newActiveIndex >= 0 && newActiveIndex < ACTIVITIES.length) {
+                setActiveTab(newActiveIndex);
+              }
+            };
+
+            container.addEventListener('scroll', handleScroll);
+            return () => container.removeEventListener('scroll', handleScroll);
+          }
+        }, [isMobile, activeTab]);
+
+        const scrollToTab = (index) => {
+          if (isMobile && swipeContainerRef.current) {
+            const container = swipeContainerRef.current;
+            const itemWidth = container.scrollWidth / ACTIVITIES.length;
+            container.scrollTo({
+              left: itemWidth * index,
+              behavior: 'smooth'
+            });
+          }
+          setActiveTab(index);
+        };
+
+        return (
+          <section id="experience" className="py-24">
+            <AnimatedSection>
+              <SectionTitle number="03." title="Experience & Leadership" />
+              
+              {/* 桌面端布局 */}
+              <div className="hidden md:flex gap-8">
+                <div className="relative flex flex-col min-w-fit">
+                  <div className="absolute left-0 top-0 bg-[var(--accent-color)] transition-all duration-300 ease-in-out" style={{...indicatorStyle, width: '2px'}}/>
+                  {ACTIVITIES.map((activity, index) => (
+                    <button 
+                      key={index} 
+                      ref={el => tabsRef.current[index] = el} 
+                      onClick={() => setActiveTab(index)}
+                      className={`text-left p-3 px-4 font-mono text-sm transition-colors duration-300 border-l-2 border-transparent ${
+                        activeTab === index 
+                          ? 'text-[var(--accent-color)] bg-[var(--card-bg)]/50' 
+                          : 'text-[var(--secondary-text)] hover:text-[var(--accent-color)] hover:bg-[var(--card-bg)]/30'
+                      }`}
+                    >
+                      {activity.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex-grow min-h-[300px]">
+                  {ACTIVITIES.map((activity, index) => (
+                    activeTab === index && (
+                      <div key={index} className="transition-opacity duration-500">
+                        <h3 className="text-2xl font-bold text-slate-100 mb-2">
+                          {activity.role} <span className="text-[var(--accent-color)]">@ {activity.name}</span>
+                        </h3>
+                        <p className="font-mono text-sm text-slate-400 mb-4">{activity.time}</p>
+                        <p className="text-slate-300 leading-relaxed mb-4">{activity.description}</p>
+                        <ul className="space-y-2">
+                          {activity.points.map((point, i) => (
+                            <li key={i} className="flex text-[var(--secondary-text)]">
+                              <span className="text-[var(--accent-color)] mr-2 mt-1">▹</span>
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>
+
+              {/* 移动端布局 */}
+              <div className="md:hidden">
+                {/* 标签导航 */}
+                <div className="flex overflow-x-auto mb-6 pb-2">
+                  {ACTIVITIES.map((activity, index) => (
+                    <button 
+                      key={index}
+                      onClick={() => scrollToTab(index)}
+                      className={`flex-shrink-0 px-4 py-2 mr-3 font-mono text-sm rounded-full transition-colors duration-300 ${
+                        activeTab === index 
+                          ? 'bg-[var(--accent-color)] text-black' 
+                          : 'bg-[var(--card-bg)] text-[var(--secondary-text)] hover:text-[var(--accent-color)]'
+                      }`}
+                    >
+                      {activity.name.split(' ')[0]}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 滑动内容 */}
+                <div 
+                  ref={swipeContainerRef}
+                  className="mobile-swipe-container flex"
+                  style={{ width: '100%' }}
+                >
+                  {ACTIVITIES.map((activity, index) => (
+                    <div 
+                      key={index} 
+                      className="mobile-swipe-item w-full px-1"
+                      style={{ minWidth: '100%' }}
+                    >
+                      <div className="bg-[var(--card-bg)] border border-[var(--border-color)] p-6 rounded-md">
+                        <h3 className="text-xl font-bold text-slate-100 mb-2">
+                          {activity.role}
+                        </h3>
+                        <p className="text-[var(--accent-color)] font-medium mb-2">{activity.name}</p>
+                        <p className="font-mono text-sm text-slate-400 mb-4">{activity.time}</p>
+                        <p className="text-slate-300 leading-relaxed mb-4 text-sm">{activity.description}</p>
+                        <ul className="space-y-2">
+                          {activity.points.map((point, i) => (
+                            <li key={i} className="flex text-[var(--secondary-text)] text-sm">
+                              <span className="text-[var(--accent-color)] mr-2 mt-1 flex-shrink-0">▹</span>
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 指示器 */}
+                <div className="flex justify-center mt-6 space-x-2">
+                  {ACTIVITIES.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => scrollToTab(index)}
+                      className={`indicator-dot w-2 h-2 rounded-full ${
+                        activeTab === index ? 'active' : 'bg-gray-600'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          </section>
+        );
+      };
+
+      const Projects = () => (
+        <section id="projects" className="py-24">
+          <AnimatedSection>
+            <SectionTitle number="04." title="Featured Research" />
+          </AnimatedSection>
+          <div className="space-y-24">
+            {PROJECTS.map((project, index) => (
+              <AnimatedSection key={index} delay={index * 300}>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                  <div className={`relative md:col-span-7 ${index % 2 !== 0 ? 'md:order-last' : ''} group`}>
+                      <img 
+                        src={project.image} 
+                        alt={project.title} 
+                        className="rounded-md w-full filter grayscale group-hover:grayscale-0 transition-all duration-300" 
+                      />
+                      <div className="absolute inset-0 bg-[var(--accent-color)]/20 group-hover:bg-transparent transition-all duration-300 rounded-md"></div>
+                  </div>
+                  <div className={`md:col-span-5 ${index % 2 !== 0 ? 'text-left' : 'md:text-right'}`}>
+                      <p className="text-sm font-mono text-[var(--accent-color)] mb-2">Featured Project</p>
+                      <h3 className="text-3xl font-bold font-serif text-slate-100 mb-4">{project.title}</h3>
+                      <div className="bg-[var(--card-bg)]/80 backdrop-blur-sm p-6 rounded-md shadow-lg mb-4">
+                          <p className="text-[var(--secondary-text)] mb-4">{project.description}</p>
+                          <ul className="space-y-2 text-sm">
+                              {project.points.map((point, i) => (
+                                  <li key={i} className="flex text-[var(--secondary-text)]">
+                                    <span className="text-[var(--accent-color)] mr-2 mt-1">▹</span>
+                                    <span>{point}</span>
+                                  </li>
+                              ))}
+                          </ul>
+                      </div>
+                      <div className={`flex flex-wrap gap-2 ${index % 2 !== 0 ? 'justify-start' : 'md:justify-end'}`}>
+                          {project.tags?.map(tag => (
+                            <span key={tag} className="text-xs font-mono text-[var(--accent-color)] bg-[var(--accent-color)]/10 px-3 py-1 rounded-full">
+                              {tag}
+                            </span>
+                          ))}
+                      </div>
+                  </div>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </section>
+      );
+      
+      const Gallery = () => {
+        const GalleryItem = ({ item, index }) => {
+          const [ref, isIntersecting] = useOnScreen({ 
+            threshold: 0.3, 
+            once: false 
+          });
+          const [isHovered, setIsHovered] = useState(false);
+
+          // 检测是否为移动设备
+          const isMobile = window.innerWidth <= 768;
+
+          return (
+            <div 
+              ref={ref}
+              className="group relative overflow-hidden rounded-lg shadow-lg aspect-[4/3]"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <img 
+                src={item.image} 
+                alt={item.title} 
+                className={`w-full h-full object-cover transform group-hover:scale-105 transition-all duration-500 ${
+                  // 移动端：滚动到位置自动变彩色，桌面端：悬停变彩色
+                  isMobile 
+                    ? (isIntersecting ? 'grayscale-0' : 'grayscale')
+                    : (isHovered ? 'grayscale-0' : 'grayscale')
+                }`}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-6 text-white">
+                <h3 className="text-xl font-serif font-bold text-slate-100 mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          );
+        };
+
+        return (
+          <section id="gallery" className="py-24">
+            <AnimatedSection>
+              <SectionTitle number="05." title="Gallery" />
+            </AnimatedSection>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {GALLERY_ITEMS.map((item, index) => (
+                <AnimatedSection key={index} delay={index * 150}>
+                  <GalleryItem item={item} index={index} />
+                </AnimatedSection>
+              ))}
+            </div>
+          </section>
+        );
+      };
+
+      const Awards = () => (
+        <section id="awards" className="py-24">
+          <AnimatedSection>
+            <SectionTitle number="06." title="Awards & Honors" />
+          </AnimatedSection>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {AWARDS.map((award, index) => (
+              <AnimatedSection key={index} delay={index * 100}>
+                <div className="bg-[var(--card-bg)] border border-[var(--border-color)] p-6 rounded-md shadow-lg h-full flex flex-col justify-between transform hover:-translate-y-2 transition-transform duration-300 group">
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-100 mb-2 group-hover:text-[var(--accent-color)] transition-colors">
+                      {award.name}
+                    </h3>
+                    <p className="text-[var(--secondary-text)] text-sm">{award.level}</p>
+                  </div>
+                  <p className="text-xs font-mono text-slate-500 mt-4 text-right">{award.time}</p>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </section>
+      );
+
+      const Skills = () => {
+        const skillCategories = [
+          {
+            title: "Technical Skills",
+            skills: ["Python", "Data Analysis", "Statistical Modeling", "Research Methods", "YOLO Algorithm", "Raspberry Pi"]
+          },
+          {
+            title: "Languages",
+            skills: ["English (Fluent)", "Chinese (Native)", "Academic Writing"]
+          },
+          {
+            title: "Leadership",
+            skills: ["Team Management", "Project Coordination", "Public Speaking", "Strategic Planning"]
+          },
+          {
+            title: "Creative",
+            skills: ["Theatre Direction", "Stage Management", "Video Editing", "Creative Problem Solving"]
+          }
+        ];
+
+        return (
+          <section id="skills" className="py-24">
+            <AnimatedSection>
+              <SectionTitle number="07." title="Skills & Expertise" />
+            </AnimatedSection>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {skillCategories.map((category, index) => (
+                <AnimatedSection key={index} delay={index * 150}>
+                  <div className="bg-[var(--card-bg)] border border-[var(--border-color)] p-6 rounded-md h-full">
+                    <h3 className="text-xl font-bold text-[var(--accent-color)] mb-4 font-serif">
+                      {category.title}
+                    </h3>
+                    <ul className="space-y-2">
+                      {category.skills.map((skill, i) => (
+                        <li key={i} className="text-[var(--secondary-text)] text-sm flex items-center">
+                          <span className="w-2 h-2 bg-[var(--accent-color)] rounded-full mr-3 flex-shrink-0"></span>
+                          {skill}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          </section>
+        );
+      };
+
+      const Contact = () => (
+        <section id="contact" className="py-32 text-center">
+          <AnimatedSection>
+            <h2 className="font-mono text-[var(--accent-color)] text-lg mb-4">08. What's Next?</h2>
+            <h3 className="font-serif text-4xl md:text-5xl font-bold text-slate-100 mb-6">Get In Touch</h3>
+            <p className="max-w-xl mx-auto text-[var(--secondary-text)] mb-10 leading-relaxed">
+              I'm always interested in discussing research opportunities, innovative projects, or collaborative ventures. Whether you have a question or want to explore potential partnerships, feel free to reach out.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a 
+                href="mailto:jasonyph@163.com" 
+                className="inline-block px-10 py-4 border border-[var(--accent-color)] text-[var(--accent-color)] rounded-sm hover:bg-[var(--accent-color)]/10 transition-all duration-300 font-mono"
+              >
+                Say Hello
+              </a>
+              <div className="flex space-x-4">
+
+              </div>
+            </div>
+          </AnimatedSection>
+        </section>
+      );
+      
+      const Footer = () => (
+        <footer className="py-12 border-t border-[var(--border-color)]">
+          <div className="container mx-auto px-6 md:px-16 lg:px-24">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="text-center md:text-left mb-4 md:mb-0">
+                <p className="text-[var(--secondary-text)] font-mono text-sm">
+                  Designed & Built by Pinhao Yan
+                </p>
+                <p className="text-slate-500 text-xs mt-1">
+                  © 2025 All rights reserved
+                </p>
+              </div>
+              <div className="flex space-x-6">
+                <a 
+                  href="mailto:jasonyph@163.com" 
+                  className="text-[var(--secondary-text)] hover:text-[var(--accent-color)] transition-colors duration-300"
+                  aria-label="Email"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                  </svg>
+                </a>
+                <button 
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="text-[var(--secondary-text)] hover:text-[var(--accent-color)] transition-colors duration-300"
+                  aria-label="Back to top"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </footer>
+      );
+
+      //========= APP =========//
+      const App = () => {
+        return (
+          <div className="bg-[var(--bg-color)] min-h-screen">
+            <Header />
+            <main className="container mx-auto px-6 md:px-16 lg:px-24">
+              <Hero />
+              <About />
+              <Education />
+              <Experience />
+              <Projects />
+              <Gallery />
+              <Awards />
+              <Skills />
+              <Contact />
+            </main>
+            <Footer />
+          </div>
+        );
+      };
+
+      //========= RENDER =========//
+      const rootElement = document.getElementById('root');
+      if (!rootElement) {
+        throw new Error("Could not find root element");
+      }
+      const root = createRoot(rootElement);
+      root.render(<App />);
+
+    </script>
+</body>
+</html>
